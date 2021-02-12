@@ -8,8 +8,8 @@ import pality
 
 class DataPca:
     @classmethod
-    def create(cls, lensing_data):
-        return cls.get_pca(cls.standardize(lensing_data))
+    def create(cls, data):
+        return cls.get_pca(cls.standardize(data))
 
     @classmethod
     def subtract_mean(cls, array):
@@ -20,8 +20,8 @@ class DataPca:
         return array / array.std(axis=-1)[:, None]
 
     @classmethod
-    def standardize(cls, lensing_data):
-        shifted_data = cls.subtract_mean(lensing_data)
+    def standardize(cls, data):
+        shifted_data = cls.subtract_mean(data)
         scaled_shifted_data = cls.normalize_by_std(shifted_data)
         return scaled_shifted_data
 
