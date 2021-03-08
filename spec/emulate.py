@@ -19,6 +19,21 @@ def describe_DataPca():
             assert np.allclose(standardized_data.mean(axis=-1), 0)
             assert np.allclose(standardized_data.std(axis=-1), 1)
 
+    def describe_unstandardize():
+
+        @pytest.fixture
+        def data():
+            return 2*np.random.randn(10, 5) + 1
+
+        def it_reverses_standardization(data):
+            standardized_data = ostrich.emulate.DataPca.standardize(data)
+            unstandardized_data = ostrich.emulate.DataPca.unstandardize(
+                standardized_data,
+                data.mean(axis=-1),
+                data.std(axis=-1),
+            )
+            assert np.allclose(unstandardized_data, data)
+
     def describe_get_pca():
 
         @pytest.fixture

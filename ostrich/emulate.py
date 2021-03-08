@@ -26,6 +26,10 @@ class DataPca:
         return scaled_shifted_data
 
     @classmethod
+    def unstandardize(cls, standard_data, mean, std_dev):
+        return mean[:, None] + (standard_data*std_dev[:, None])
+
+    @classmethod
     def get_pca(cls, data):
         return pality.Pca.calculate(data)
 
@@ -57,7 +61,7 @@ class PcaEmulator:
 
     def reconstruct_data(self, coords):
         standard_data = self.reconstruct_standard_data(coords)
-        return self.mean[:, None] + (standard_data*self.std_dev[:, None])
+        return DataPca.unstandardize(standard_data, self.mean, self.std_dev)
 
     def __call__(self, coords):
         return self.reconstruct_data(coords)
