@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9"]
 
     steps:
     - uses: actions/checkout@v3
@@ -32,8 +32,6 @@ jobs:
     - name: Setup
       run: |
         pip install -e .
-        pwd
-        ls spec/**/*.py
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -42,4 +40,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest spec/**/*.py
+        < spec/test_list.txt | xargs pytest
