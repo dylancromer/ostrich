@@ -32,6 +32,10 @@ jobs:
     - name: Setup
       run: |
         pip install -e .
+        pwd
+        ls
+        ls spec/
+        ls spec/**
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
