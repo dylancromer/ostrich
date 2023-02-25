@@ -20,12 +20,10 @@ class GaussianProcessInterpolator:
 
 
 class RbfInterpolator:
-    rbf_function = 'multiquadric'
-
-    def __init__(self, params, func_vals):
+    def __init__(self, params, func_vals, function='multiquadric'):
         params = ostrich.mathutils.atleast_kd(params, 2)
         point_vals = func_vals.flatten()
-        self.rbfi = Rbf(*params.T, point_vals, function=self.rbf_function)
+        self.rbfi = Rbf(*params.T, point_vals, function=function)
 
     def __call__(self, params):
         params = ostrich.mathutils.atleast_kd(params, 2)
