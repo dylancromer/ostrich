@@ -8,8 +8,11 @@ import pality
 
 class DataPca:
     @classmethod
-    def create(cls, data):
-        return cls.get_pca(cls.standardize(data))
+    def create(cls, data, standardize=True):
+        if standardize:
+            return cls.get_pca(cls.standardize(data))
+        else:
+            return cls.get_pca(data)
 
     @classmethod
     def subtract_mean(cls, array):
@@ -44,6 +47,7 @@ class PcaEmulator:
     explained_variance: np.ndarray
     interpolator_class: object
     interpolator_kwargs: object = MappingProxyType({})
+    standardize_data: bool = True
 
     def __post_init__(self):
         self.n_components = self.basis_vectors.shape[-1]
@@ -54,14 +58,17 @@ class PcaEmulator:
             self.interpolator_class(self.coords, self.weights[i, :], **self.interpolator_kwargs) for i in range(self.n_components)
         )
 
-    def reconstruct_standard_data(self, coords):
+    def _reconstruct_data(self, coords):
         return np.stack(tuple(
             self.weight_interpolators[i](coords)[None, :] * self.basis_vectors[:, i, None] for i in range(self.n_components)
         )).sum(axis=0)
 
     def reconstruct_data(self, coords):
-        standard_data = self.reconstruct_standard_data(coords)
-        return DataPca.unstandardize(standard_data, self.mean, self.std_dev)
+        reconstructed_data = self._reconstruct_data(coords)
+        if self.standardize_data:
+            return DataPca.unstandardize(reconstructed_data, self.mean, self.std_dev)
+        else:
+            return reconstructed_data
 
     def __call__(self, coords):
         return self.reconstruct_data(coords)
@@ -75,8 +82,8 @@ class PcaEmulator:
         )(new_radii)
 
     @classmethod
-    def create_from_data(cls, coords, data, interpolator_class, interpolator_kwargs=MappingProxyType({}), num_components=10):
-        pca = DataPca.create(data)
+    def create_from_data(cls, coords, data, interpolator_class, interpolator_kwargs=MappingProxyType({}), num_components=10, standardize_data=True):
+        pca = DataPca.create(data, standardize=standardize_data)
         basis_vectors = pca.basis_vectors[:, :num_components]
         weights = pca.weights[:num_components, :]
         explained_variance = pca.explained_variance[:num_components]
@@ -89,6 +96,7 @@ class PcaEmulator:
             explained_variance=explained_variance,
             interpolator_class=interpolator_class,
             interpolator_kwargs=interpolator_kwargs,
+            standardize_data=standardize_data,
         )
 
 

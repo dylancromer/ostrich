@@ -54,6 +54,12 @@ def describe_DataPca():
         assert np.allclose(reconstructed_data.mean(axis=-1), 0)
         assert np.allclose(reconstructed_data.std(axis=-1), 1)
 
+    def it_can_bypass_standardization(data):
+        pca = ostrich.emulate.DataPca.create(data, standardize=False)
+        reconstructed_data = pca.basis_vectors @ pca.weights
+        assert np.allclose(reconstructed_data.mean(axis=-1), data.mean(axis=-1))
+        assert np.allclose(reconstructed_data.std(axis=-1), data.std(axis=-1))
+
 
 def describe_PcaEmulator():
 
@@ -93,6 +99,21 @@ def describe_PcaEmulator():
 
         new_coords = np.linspace(0.1, 0.9, 20)
         assert emulator(new_coords).shape == (10, 20)
+        assert np.allclose(emulator(coords), data, rtol=1e-2)
+
+    def it_lets_you_choose_to_bypass_internal_data_standardizing(coords, data):
+        emulator = ostrich.emulate.PcaEmulator.create_from_data(
+            coords=coords,
+            data=data,
+            interpolator_class=ostrich.interpolate.RbfInterpolator,
+            interpolator_kwargs={},
+            standardize_data=False,
+        )
+
+        new_coords = np.linspace(0.1, 0.9, 20)
+        assert emulator(new_coords).shape == (10, 20)
+        assert np.allclose(emulator(coords), data, rtol=1e-2)
+
 
     def describe_radial_interpolation():
 
