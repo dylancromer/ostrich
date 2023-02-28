@@ -12,5 +12,8 @@ pip install --user -e .
 inside the base directory. To install dependencies, run
 ```
 pip install --user -r requirements.txt
+```
 
 ## Usage
+
+Currently there are Jupyter notebooks demoing usage in the `ipython` directory of the repository. In the future these will be updated and additional documentation will be created.
